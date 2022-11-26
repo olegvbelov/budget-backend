@@ -28,7 +28,7 @@ public class GetCategoryServlet extends HttpServlet {
         System.out.println(categories.size());
     
     
-        if (isNull(categories) || categories.size() == 0) {
+        if (categories.size() == 0) {
             String oldPeriod = getPrevPeriod(period);
             categories = categoryService.getCategoriesForPeriod(account, oldPeriod);
             if (isNull(categories) || categories.size() == 0) {
