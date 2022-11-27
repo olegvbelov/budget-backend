@@ -2,9 +2,6 @@ package com.olegvbelov.usermanagement.service;
 
 import com.olegvbelov.usermanagement.dto.UserDto;
 import com.yandex.ydb.table.Session;
-import com.yandex.ydb.table.query.DataQuery;
-import com.yandex.ydb.table.query.Params;
-import com.yandex.ydb.table.result.ResultSetReader;
 import com.yandex.ydb.table.transaction.TxControl;
 import com.yandex.ydb.table.values.PrimitiveValue;
 
@@ -24,9 +21,9 @@ public class UserServiceImpl implements UserService {
     public UserDto getUserById(String id) {
         var query = session.prepareDataQuery(
                 "DECLARE $id AS String;" +
-                        "SELECT u.id AS id, u.first_name AS firstName, u.last_name AS lastName, \n" +
+                        "SELECT u.id AS id, u.first_name AS firstName, u.last_name AS lastName, " +
                         "u.middle_name AS middleName\n" +
-                        "FROM user AS u" +
+                        "FROM user AS u\n" +
                         "WHERE u.id = $id;")
                 .join()
                 .expect("query failed");
