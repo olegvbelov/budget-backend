@@ -35,6 +35,21 @@ public class UserManagementServlet extends HttpServlet {
     
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) {
+        makeRequest(req, resp);
+    }
+    
+    @Override
+    protected void doPut(HttpServletRequest req, HttpServletResponse resp) {
+        makeRequest(req, resp);
+    }
+    
+    @Override
+    protected void doDelete(HttpServletRequest req, HttpServletResponse resp) {
+        String id = req.getParameter("id");
+        service.deleteUserById(id);
+    }
+    
+    private void makeRequest(HttpServletRequest req, HttpServletResponse resp) {
         UserDto userDto = new UserDto();
         try (var inputStream = req.getInputStream()) {
             var bytes = inputStream.readAllBytes();
@@ -56,5 +71,5 @@ public class UserManagementServlet extends HttpServlet {
             System.err.println(e.getMessage());
         }
     }
-
+    
 }

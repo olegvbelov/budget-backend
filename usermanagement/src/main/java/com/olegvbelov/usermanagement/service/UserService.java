@@ -6,4 +6,6 @@ public interface UserService {
     UserDto getUserById(String id);
     
     UserDto createOrUpdate(UserDto userDto);
+    
+    void deleteUserById(String id);
 }

@@ -10,7 +10,7 @@ paths:
       x-yc-apigateway-integration:
         type: cloud-functions
         function_id: d4ef0fpk7mql64fb9g2i
-      operationId: getuserbyid
+      operationId: getUserById
       parameters:
         - explode: true
           in: query
@@ -30,12 +30,43 @@ paths:
       x-yc-apigateway-integration:
         type: cloud-functions
         function_id: d4ef0fpk7mql64fb9g2i
-      operationId: createuser
+      operationId: createUser
       responses:
         '200':
           description: Success response
-        '404':
-          description: User with id not found
+        '400':
+          description: Server error
+      summary: get user by id
+    put:
+      x-yc-apigateway-integration:
+        type: cloud-functions
+        function_id: d4ef0fpk7mql64fb9g2i
+      operationId: updateUser
+      responses:
+        '200':
+          description: Success response
+        '400':
+          description: Server error
+      summary: get user by id
+    delete:
+      x-yc-apigateway-integration:
+        type: cloud-functions
+        function_id: d4ef0fpk7mql64fb9g2i
+      operationId: deleteUserById
+      parameters:
+        - explode: true
+          in: query
+          name: id
+          required: true
+          schema:
+            description: user id
+            type: string
+          style: form
+      responses:
+        '200':
+          description: Success response
+        '400':
+          description: Server error
       summary: get user by id
 x-yc-apigateway:
   service_account: aje4ej9qgr488q4tauai
