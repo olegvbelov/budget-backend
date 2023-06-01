@@ -46,8 +46,8 @@ public class CategoryServiceImpl implements CategoryService {
                                 "ORDER BY sortOrder;")
                 .join()
                 .expect("query failed");
-    
-        TxControl txControl = TxControl.serializableRw().setCommitTx(true);
+
+        var txControl = TxControl.serializableRw().setCommitTx(true);
     
         ResultSetReader result = makeQuery(query, txControl, account, period);
     

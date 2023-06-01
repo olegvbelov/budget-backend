@@ -10,7 +10,7 @@ paths:
       x-yc-apigateway-integration:
         type: cloud-functions
         function_id: d4efdtd5nthbl8erbdem
-      operationId: getcategories
+      operationId: get-categories
       parameters:
       - explode: true
         in: query

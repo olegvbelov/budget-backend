@@ -12,7 +12,7 @@ import java.util.List;
 
 import static java.util.Objects.isNull;
 
-public class GetCategoryServlet extends HttpServlet {
+public class CategoryManagementServlet extends HttpServlet {
     
     private final CategoryService categoryService = new CategoryServiceImpl();
     
