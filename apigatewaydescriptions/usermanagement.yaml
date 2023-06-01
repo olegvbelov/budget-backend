@@ -1,6 +1,6 @@
 openapi: 3.0.0
 info:
-  title: Bugget user management API
+  title: Budget user management API
   version: 1.0.0
 servers:
   - url: https://d5dgrt4l9npeppp5ef61.apigw.yandexcloud.net
@@ -36,7 +36,7 @@ paths:
           description: Success response
         '400':
           description: Server error
-      summary: get user by id
+      summary: create new user
     put:
       x-yc-apigateway-integration:
         type: cloud-functions
@@ -67,6 +67,6 @@ paths:
           description: Success response
         '400':
           description: Server error
-      summary: get user by id
+      summary: delete user by id
 x-yc-apigateway:
   service_account: aje4ej9qgr488q4tauai
