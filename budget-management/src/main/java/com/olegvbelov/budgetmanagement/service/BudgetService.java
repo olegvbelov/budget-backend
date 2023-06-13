@@ -4,8 +4,10 @@ import com.jsoniter.any.Any;
 import com.jsoniter.output.JsonStream;
 import com.olegvbelov.budgetmanagement.dto.BudgetDto;
 import com.olegvbelov.core.AbstractBudgetService;
+import com.olegvbelov.core.Constants;
 import com.yandex.ydb.table.query.Params;
 import com.yandex.ydb.table.result.ResultSetReader;
+import com.yandex.ydb.table.transaction.TxControl;
 import com.yandex.ydb.table.values.PrimitiveValue;
 
 import java.nio.charset.Charset;
@@ -63,6 +65,18 @@ public class BudgetService extends AbstractBudgetService {
                 + "b.updated_at AS updatedAt\n"
                 + "FROM budget AS b\n"
                 + "WHERE b.id = $id and b.is_deleted = false;";
+    }
+
+    private String getQueryForGetByUserId() {
+        return "DECLARE $userId AS String;"
+                + "SELECT b.id AS id, b.currency AS currency, b.date_format AS dateFormat, "
+                + "b.decimal_digits AS decimalDigits, b.decimal_separator AS decimalSeparator, "
+                + "b.default_budget AS defaultBudget, b.first_month AS firstMonth, b.user_id AS userId, "
+                + "b.group_separator AS groupSeparator, b.last_month AS lastMonth, b.name AS name, "
+                + "b.is_deleted AS isDeleted, b.symbol_first AS symbolFirst, b.created_at AS createdAt, "
+                + "b.updated_at AS updatedAt\n"
+                + "FROM budget AS b\n"
+                + "WHERE b.user_id = $userId and b.is_deleted = false;";
     }
 
     @Override
@@ -144,5 +158,21 @@ public class BudgetService extends AbstractBudgetService {
         result.put("$symbolFirst", PrimitiveValue.bool(any.get("symbolFirst").toBoolean()));
         result.put("$updatedAt", PrimitiveValue.datetime(LocalDateTime.now()));
         return result;
+    }
+
+    public String getAllForUser(String userId) {
+        var txControl = TxControl.serializableRw().setCommitTx(true);
+        Params params = Params.of(
+                "$userId", PrimitiveValue.string(userId.getBytes(Charset.defaultCharset()))
+        );
+        var queryResult = retryCtx.supplyResult(session -> session.executeDataQuery(getQueryForGetByUserId(), txControl, params))
+                .join().expect(Constants.QUERY_EXECUTE);
+
+        var resultSet = queryResult.getResultSet(0);
+        List<BudgetDto> result = new ArrayList<>();
+        while(resultSet.next()) {
+            result.add(mapToDto(resultSet));
+        }
+        return JsonStream.serialize(result);
     }
 }

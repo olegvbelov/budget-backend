@@ -82,12 +82,18 @@ paths:
         function_id: d4e6a72hp7187il17v2p
       operationId: getBudgetById
       parameters:
-        - explode: true
-          in: query
+        - in: query
           name: id
-          required: true
+          required: false
           schema:
             description: budget id
+            type: string
+          style: form
+        - in: query
+          name: userId
+          required: false
+          schema:
+            description: user id
             type: string
           style: form
       responses:

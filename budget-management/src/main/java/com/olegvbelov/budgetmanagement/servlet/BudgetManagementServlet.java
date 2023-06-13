@@ -17,14 +17,24 @@ public class BudgetManagementServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) {
         String id = req.getParameter("id");
+        String userId = req.getParameter("userId");
         try (var out = resp.getWriter()) {
-            var result = service.getById(id);
-            if (Strings.isNullOrEmpty(result)) {
-                resp.sendError(404);
+            if (Strings.isNullOrEmpty(id) && Strings.isNullOrEmpty(userId)) {
+                resp.sendError(400);
                 return;
             }
             resp.setContentType("application/json");
             resp.setCharacterEncoding("UTF-8");
+            String result;
+            if (Strings.isNullOrEmpty(id)) {
+                result = service.getAllForUser(userId);
+            } else {
+                result = service.getById(id);
+            }
+            if (Strings.isNullOrEmpty(result)) {
+                resp.sendError(404);
+                return;
+            }
             out.print(result);
         } catch (IOException e) {
             System.err.println(e.getLocalizedMessage());

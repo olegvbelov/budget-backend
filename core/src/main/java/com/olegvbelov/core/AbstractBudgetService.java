@@ -12,7 +12,7 @@ import java.time.LocalDateTime;
 
 public abstract class AbstractBudgetService implements CoreBudgetService {
 
-    private final SessionRetryContext retryCtx;
+    public final SessionRetryContext retryCtx;
 
     public AbstractBudgetService() {
         var dbConnector = new DBConnector();
@@ -31,7 +31,7 @@ public abstract class AbstractBudgetService implements CoreBudgetService {
         var result = retryCtx.supplyResult(session -> session.executeDataQuery(query, txControl, params))
                 .join()
                 .expect("execute data query");
-        ResultSetReader rs = result.getResultSet(0);
+
         if (result.getResultSetCount() <= 0) {
             return null;
         }
