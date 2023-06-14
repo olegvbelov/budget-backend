@@ -75,20 +75,34 @@ paths:
         '404':
           description: User with id not found
       summary: delete user by id
-  /budget:
+  /budget/{id}:
     get:
       x-yc-apigateway-integration:
         type: cloud-functions
         function_id: d4e6a72hp7187il17v2p
       operationId: getBudgetById
       parameters:
-        - in: query
+        - in: path
           name: id
           required: false
           schema:
             description: budget id
             type: string
-          style: form
+      responses:
+        '200':
+          description: Success response
+        '400':
+          description: Server error
+        '404':
+          description: Budget with id not found
+      summary: get budget by id
+  /budget:
+    get:
+      x-yc-apigateway-integration:
+        type: cloud-functions
+        function_id: d4e6a72hp7187il17v2p
+      operationId: getBudgetsByUserId
+      parameters:
         - in: query
           name: userId
           required: false
@@ -135,7 +149,7 @@ paths:
       operationId: deleteBudgetById
       parameters:
         - explode: true
-          in: query
+          in: path
           name: id
           required: true
           schema:

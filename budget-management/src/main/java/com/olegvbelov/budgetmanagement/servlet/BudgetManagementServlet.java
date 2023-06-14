@@ -16,8 +16,8 @@ public class BudgetManagementServlet extends HttpServlet {
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) {
-        String id = req.getParameter("id");
-        String userId = req.getParameter("userId");
+        var id = extractPathVariable(req);
+        var userId = req.getParameter("userId");
         try (var out = resp.getWriter()) {
             if (Strings.isNullOrEmpty(id) && Strings.isNullOrEmpty(userId)) {
                 resp.sendError(400);
@@ -43,8 +43,12 @@ public class BudgetManagementServlet extends HttpServlet {
 
     @Override
     protected void doDelete(HttpServletRequest req, HttpServletResponse resp) {
-        var id = req.getParameter("id");
-        service.deleteById(id);
+        service.deleteById(extractPathVariable(req));
+    }
+
+    private static String extractPathVariable(HttpServletRequest req) {
+        var id = req.getPathInfo();
+        return id.substring(id.lastIndexOf("/") + 1);
     }
 
     @Override
