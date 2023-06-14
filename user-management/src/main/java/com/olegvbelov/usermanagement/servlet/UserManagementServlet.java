@@ -24,6 +24,7 @@ public class UserManagementServlet extends HttpServlet {
             var userDto = service.getUserById(id);
             if (userDto.getId() == null) {
                 resp.sendError(404);
+                return;
             }
             resp.setContentType("application/json");
             resp.setCharacterEncoding("UTF-8");
