@@ -1,0 +1,72 @@
+openapi: 3.0.0
+info:
+  title: Budget user management API
+  version: 1.0.0
+servers:
+  - url: https://d5dgrt4l9npeppp5ef61.apigw.yandexcloud.net
+paths:
+  /user:
+    get:
+      x-yc-apigateway-integration:
+        type: cloud-functions
+        function_id: d4ef0fpk7mql64fb9g2i
+      operationId: getUserById
+      parameters:
+        - explode: true
+          in: query
+          name: id
+          required: true
+          schema:
+            description: user id
+            type: string
+          style: form
+      responses:
+        '200':
+          description: Success response
+        '404':
+          description: User with id not found
+      summary: get user by id
+    post:
+      x-yc-apigateway-integration:
+        type: cloud-functions
+        function_id: d4ef0fpk7mql64fb9g2i
+      operationId: createUser
+      responses:
+        '200':
+          description: Success response
+        '400':
+          description: Server error
+      summary: create new user
+    put:
+      x-yc-apigateway-integration:
+        type: cloud-functions
+        function_id: d4ef0fpk7mql64fb9g2i
+      operationId: updateUser
+      responses:
+        '200':
+          description: Success response
+        '400':
+          description: Server error
+      summary: get user by id
+    delete:
+      x-yc-apigateway-integration:
+        type: cloud-functions
+        function_id: d4ef0fpk7mql64fb9g2i
+      operationId: deleteUserById
+      parameters:
+        - explode: true
+          in: query
+          name: id
+          required: true
+          schema:
+            description: user id
+            type: string
+          style: form
+      responses:
+        '200':
+          description: Success response
+        '400':
+          description: Server error
+      summary: delete user by id
+x-yc-apigateway:
+  service_account: aje4ej9qgr488q4tauai

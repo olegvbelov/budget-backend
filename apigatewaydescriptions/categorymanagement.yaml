@@ -1,0 +1,36 @@
+openapi: 3.0.0
+info:
+  title: Category management API
+  version: 1.0.0
+servers:
+- url: https://d5dgoced3c93t2rgnih2.apigw.yandexcloud.net
+paths:
+  /category:
+    get:
+      x-yc-apigateway-integration:
+        type: cloud-functions
+        function_id: d4efdtd5nthbl8erbdem
+      operationId: get-categories
+      parameters:
+      - explode: true
+        in: query
+        name: account
+        required: false
+        schema:
+          description: client account number
+          type: string
+        style: form
+      - explode: true
+        in: query
+        name: period
+        required: false
+        schema:
+          description: The working period in format yyyy-mm
+          type: string
+        style: form
+      responses:
+        '200':
+          description: Success response
+      summary: get list of categories
+x-yc-apigateway:
+  service_account: aje4ej9qgr488q4tauai

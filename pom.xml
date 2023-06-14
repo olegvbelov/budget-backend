@@ -8,10 +8,80 @@
     <artifactId>budget-backend</artifactId>
     <packaging>pom</packaging>
     <version>0.1.0-SNAPSHOT</version>
+    <modules>
+        <module>category-management</module>
+        <module>user-management</module>
+        <module>budget-management</module>
+        <module>core</module>
+    </modules>
 
     <properties>
-        <maven.compiler.source>11</maven.compiler.source>
-        <maven.compiler.target>11</maven.compiler.target>
+        <maven.compiler.source>17</maven.compiler.source>
+        <maven.compiler.target>17</maven.compiler.target>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <javax.servlet-api.version>4.0.1</javax.servlet-api.version>
+        <ydb-sdk.version>1.45.6</ydb-sdk.version>
+        <grpc.version>1.55.1</grpc.version>
+        <jsoniter.version>0.9.23</jsoniter.version>
     </properties>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>3.10.1</version>
+                <configuration>
+                    <source>17</source>
+                    <target>17</target>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>javax.servlet</groupId>
+                <artifactId>javax.servlet-api</artifactId>
+                <version>${javax.servlet-api.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>io.grpc</groupId>
+                <artifactId>grpc-context</artifactId>
+                <version>${grpc.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>io.grpc</groupId>
+                <artifactId>grpc-core</artifactId>
+                <version>${grpc.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>io.grpc</groupId>
+                <artifactId>grpc-netty-shaded</artifactId>
+                <version>${grpc.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.yandex.ydb</groupId>
+                <artifactId>ydb-sdk-core</artifactId>
+                <version>${ydb-sdk.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.yandex.ydb</groupId>
+                <artifactId>ydb-sdk-table</artifactId>
+                <version>${ydb-sdk.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.yandex.ydb</groupId>
+                <artifactId>ydb-sdk-auth-iam</artifactId>
+                <version>${ydb-sdk.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.jsoniter</groupId>
+                <artifactId>jsoniter</artifactId>
+                <version>${jsoniter.version}</version>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
 
 </project>
