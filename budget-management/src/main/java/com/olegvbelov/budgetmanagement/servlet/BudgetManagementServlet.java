@@ -4,6 +4,7 @@ import com.google.common.base.Strings;
 import com.jsoniter.JsonIterator;
 import com.jsoniter.any.Any;
 import com.olegvbelov.budgetmanagement.service.BudgetService;
+import com.olegvbelov.core.util.BudgetUtils;
 
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -16,7 +17,10 @@ public class BudgetManagementServlet extends HttpServlet {
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) {
-        var id = extractPathVariable(req);
+        var id = BudgetUtils.extractPathVariable(req);
+        if (id.length() < 32) {
+            id = null;
+        }
         var userId = req.getParameter("userId");
         try (var out = resp.getWriter()) {
             if (Strings.isNullOrEmpty(id) && Strings.isNullOrEmpty(userId)) {
@@ -43,13 +47,9 @@ public class BudgetManagementServlet extends HttpServlet {
 
     @Override
     protected void doDelete(HttpServletRequest req, HttpServletResponse resp) {
-        service.deleteById(extractPathVariable(req));
+        service.deleteById(BudgetUtils.extractPathVariable(req));
     }
 
-    private static String extractPathVariable(HttpServletRequest req) {
-        var id = req.getPathInfo();
-        return id.substring(id.lastIndexOf("/") + 1);
-    }
 
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) {

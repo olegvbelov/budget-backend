@@ -1,6 +1,10 @@
-package com.olegvbelov.core;
+package com.olegvbelov.core.service;
 
 import com.jsoniter.any.Any;
+import com.jsoniter.output.JsonStream;
+import com.olegvbelov.core.dto.BaseDto;
+import com.olegvbelov.core.mapper.BaseMapper;
+import com.olegvbelov.core.util.Constants;
 import com.yandex.ydb.table.SessionRetryContext;
 import com.yandex.ydb.table.query.Params;
 import com.yandex.ydb.table.result.ResultSetReader;
@@ -9,10 +13,14 @@ import com.yandex.ydb.table.values.PrimitiveValue;
 
 import java.nio.charset.Charset;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
-public abstract class AbstractBudgetService implements CoreBudgetService {
+public abstract class AbstractBudgetService<Dto extends BaseDto,
+        Mapper extends BaseMapper<Dto>> implements CoreBudgetService {
 
     public final SessionRetryContext retryCtx;
+    protected abstract Mapper getMapper();
 
     public AbstractBudgetService() {
         var dbConnector = new DBConnector();
@@ -30,7 +38,7 @@ public abstract class AbstractBudgetService implements CoreBudgetService {
         var txControl = TxControl.serializableRw().setCommitTx(true);
         var result = retryCtx.supplyResult(session -> session.executeDataQuery(query, txControl, params))
                 .join()
-                .expect("execute data query");
+                .expect(Constants.QUERY_EXECUTE);
 
         if (result.getResultSetCount() <= 0) {
             return null;
@@ -46,7 +54,19 @@ public abstract class AbstractBudgetService implements CoreBudgetService {
                 .expect(Constants.QUERY_EXECUTE);
     }
 
-    protected abstract String parse(ResultSetReader resultSetReader);
+    private String parse(ResultSetReader resultSetReader) {
+        if (resultSetReader.getRowCount() == 1) {
+            if (!resultSetReader.next()) {
+                return null;
+            }
+            return JsonStream.serialize(getMapper().mapToDto(resultSetReader));
+        }
+        List<Dto> result = new ArrayList<>();
+        while (resultSetReader.next()) {
+            result.add(getMapper().mapToDto(resultSetReader));
+        }
+        return JsonStream.serialize(result);
+    }
 
     protected abstract String getQueryForGet();
 

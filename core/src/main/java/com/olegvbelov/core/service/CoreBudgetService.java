@@ -1,4 +1,4 @@
-package com.olegvbelov.core;
+package com.olegvbelov.core.service;
 
 import com.jsoniter.any.Any;
 

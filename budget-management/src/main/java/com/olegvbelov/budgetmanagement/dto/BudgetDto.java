@@ -1,9 +1,10 @@
 package com.olegvbelov.budgetmanagement.dto;
 
+import com.olegvbelov.core.dto.BaseDto;
+
 import java.util.Objects;
 
-public class BudgetDto {
-    private String id;
+public class BudgetDto extends BaseDto {
     private String userId;
     private String name;
     private String firstMonth;
@@ -15,8 +16,6 @@ public class BudgetDto {
     private String groupSeparator;
     private boolean symbolFirst;
     private boolean defaultBudget;
-    private boolean isDeleted;
-
 
     public BudgetDto() {
     }

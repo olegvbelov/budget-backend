@@ -3,10 +3,10 @@ package com.olegvbelov.budgetmanagement.service;
 import com.jsoniter.any.Any;
 import com.jsoniter.output.JsonStream;
 import com.olegvbelov.budgetmanagement.dto.BudgetDto;
-import com.olegvbelov.core.AbstractBudgetService;
-import com.olegvbelov.core.Constants;
+import com.olegvbelov.budgetmanagement.mapper.BudgetMapper;
+import com.olegvbelov.core.service.AbstractBudgetService;
+import com.olegvbelov.core.util.Constants;
 import com.yandex.ydb.table.query.Params;
-import com.yandex.ydb.table.result.ResultSetReader;
 import com.yandex.ydb.table.transaction.TxControl;
 import com.yandex.ydb.table.values.PrimitiveValue;
 
@@ -15,44 +15,32 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
-public class BudgetService extends AbstractBudgetService {
+public class BudgetService extends AbstractBudgetService<BudgetDto, BudgetMapper> {
+    private final BudgetMapper mapper = new BudgetMapper();
+
+    @Override
+    protected BudgetMapper getMapper() {
+        return this.mapper;
+    }
 
     public BudgetService() {
         super();
     }
 
-    @Override
-    protected String parse(ResultSetReader resultSetReader) {
-        if (resultSetReader.getRowCount() == 1) {
-            if (!resultSetReader.next()) {
-                return null;
-            }
-            return JsonStream.serialize(mapToDto(resultSetReader));
-        }
-        List<BudgetDto> result = new ArrayList<>();
-        while (resultSetReader.next()) {
-            result.add(mapToDto(resultSetReader));
-        }
-        return JsonStream.serialize(result);
-    }
-
-    private BudgetDto mapToDto(ResultSetReader resultSetReader) {
-        var result = new BudgetDto();
-        result.setId(resultSetReader.getColumn("id").getString(Charset.defaultCharset()));
-        result.setUserId(resultSetReader.getColumn("userId").getString(Charset.defaultCharset()));
-        result.setCurrency(resultSetReader.getColumn("currency").getString(Charset.defaultCharset()));
-        result.setDateFormat(resultSetReader.getColumn("dateFormat").getString(Charset.defaultCharset()));
-        result.setDecimalDigits(resultSetReader.getColumn("decimalDigits").getInt32());
-        result.setDecimalSeparator(resultSetReader.getColumn("decimalSeparator").getString(Charset.defaultCharset()));
-        result.setDefaultBudget(resultSetReader.getColumn("defaultBudget").getBool());
-        result.setFirstMonth(resultSetReader.getColumn("firstMonth").getString(Charset.defaultCharset()));
-        result.setGroupSeparator(resultSetReader.getColumn("groupSeparator").getString(Charset.defaultCharset()));
-        result.setLastMonth(resultSetReader.getColumn("lastMonth").getString(Charset.defaultCharset()));
-        result.setName(resultSetReader.getColumn("name").getString(Charset.defaultCharset()));
-        result.setDeleted(resultSetReader.getColumn("isDeleted").getBool());
-        result.setSymbolFirst(resultSetReader.getColumn("symbolFirst").getBool());
-        return result;
-    }
+//    @Override
+//    protected String parse(ResultSetReader resultSetReader) {
+//        if (resultSetReader.getRowCount() == 1) {
+//            if (!resultSetReader.next()) {
+//                return null;
+//            }
+//            return JsonStream.serialize(mapper.mapToDto(resultSetReader));
+//        }
+//        List<BudgetDto> result = new ArrayList<>();
+//        while (resultSetReader.next()) {
+//            result.add(mapper.mapToDto(resultSetReader));
+//        }
+//        return JsonStream.serialize(result);
+//    }
 
     @Override
     protected String getQueryForGet() {
@@ -137,26 +125,26 @@ public class BudgetService extends AbstractBudgetService {
     @Override
     protected Params prepareParamsForUpdate(Any any) {
         var result = Params.create();
-        result.put("$id", PrimitiveValue.string(any.get("id").toString().getBytes(Charset.defaultCharset())));
-        result.put("$userId", PrimitiveValue.string(any.get("userId").toString().getBytes(Charset.defaultCharset())));
-        result.put("$currency", PrimitiveValue.string(any.get("currency").toString()
-                .getBytes(Charset.defaultCharset())));
-        result.put("$dateFormat", PrimitiveValue.string(any.get("dateFormat").toString()
-                .getBytes(Charset.defaultCharset())));
-        result.put("$decimalDigits", PrimitiveValue.int32(any.get("decimalDigits").toInt()));
-        result.put("$decimalSeparator", PrimitiveValue.string(any.get("decimalSeparator").toString()
-                .getBytes(Charset.defaultCharset())));
-        result.put("$defaultBudget", PrimitiveValue.bool(any.get("defaultBudget").toBoolean()));
-        result.put("$firstMonth", PrimitiveValue.string(any.get("firstMonth").toString()
-                .getBytes(Charset.defaultCharset())));
-        result.put("$groupSeparator", PrimitiveValue.string(any.get("groupSeparator").toString()
-                .getBytes(Charset.defaultCharset())));
-        result.put("$lastMonth", PrimitiveValue.string(any.get("lastMonth").toString()
-                .getBytes(Charset.defaultCharset())));
-        result.put("$name", PrimitiveValue.string(any.get("name").toString().getBytes(Charset.defaultCharset())));
-        result.put("$isDeleted", PrimitiveValue.bool(any.get("isDeleted").toBoolean()));
-        result.put("$symbolFirst", PrimitiveValue.bool(any.get("symbolFirst").toBoolean()));
-        result.put("$updatedAt", PrimitiveValue.datetime(LocalDateTime.now()));
+        result.put("$id", PrimitiveValue.string(any.get("id").toString().getBytes(Charset.defaultCharset())))
+                .put("$userId", PrimitiveValue.string(any.get("userId").toString().getBytes(Charset.defaultCharset())))
+                .put("$currency", PrimitiveValue.string(any.get("currency").toString()
+                        .getBytes(Charset.defaultCharset())))
+                .put("$dateFormat", PrimitiveValue.string(any.get("dateFormat").toString()
+                        .getBytes(Charset.defaultCharset())))
+                .put("$decimalDigits", PrimitiveValue.int32(any.get("decimalDigits").toInt()))
+                .put("$decimalSeparator", PrimitiveValue.string(any.get("decimalSeparator").toString()
+                        .getBytes(Charset.defaultCharset())))
+                .put("$defaultBudget", PrimitiveValue.bool(any.get("defaultBudget").toBoolean()))
+                .put("$firstMonth", PrimitiveValue.string(any.get("firstMonth").toString()
+                        .getBytes(Charset.defaultCharset())))
+                .put("$groupSeparator", PrimitiveValue.string(any.get("groupSeparator").toString()
+                        .getBytes(Charset.defaultCharset())))
+                .put("$lastMonth", PrimitiveValue.string(any.get("lastMonth").toString()
+                        .getBytes(Charset.defaultCharset())))
+                .put("$name", PrimitiveValue.string(any.get("name").toString().getBytes(Charset.defaultCharset())))
+                .put("$isDeleted", PrimitiveValue.bool(any.get("isDeleted").toBoolean()))
+                .put("$symbolFirst", PrimitiveValue.bool(any.get("symbolFirst").toBoolean()))
+                .put("$updatedAt", PrimitiveValue.datetime(LocalDateTime.now()));
         return result;
     }
 
@@ -171,7 +159,7 @@ public class BudgetService extends AbstractBudgetService {
         var resultSet = queryResult.getResultSet(0);
         List<BudgetDto> result = new ArrayList<>();
         while(resultSet.next()) {
-            result.add(mapToDto(resultSet));
+            result.add(mapper.mapToDto(resultSet));
         }
         return JsonStream.serialize(result);
     }
