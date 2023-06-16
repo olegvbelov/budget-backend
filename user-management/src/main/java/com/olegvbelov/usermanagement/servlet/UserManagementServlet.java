@@ -1,11 +1,10 @@
 package com.olegvbelov.usermanagement.servlet;
 
+import com.google.common.base.Strings;
 import com.jsoniter.JsonIterator;
 import com.jsoniter.any.Any;
-import com.jsoniter.output.JsonStream;
-import com.olegvbelov.usermanagement.dto.UserDto;
+import com.olegvbelov.core.util.BudgetUtils;
 import com.olegvbelov.usermanagement.service.UserService;
-import com.olegvbelov.usermanagement.service.UserServiceImpl;
 
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -15,20 +14,26 @@ import java.io.PrintWriter;
 
 public class UserManagementServlet extends HttpServlet {
 
-    private final UserService service = new UserServiceImpl();
+    private final UserService service = new UserService();
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) {
-        String id = req.getParameter("id");
+        var id = BudgetUtils.extractPathVariable(req);
         try (PrintWriter out = resp.getWriter()) {
-            var userDto = service.getUserById(id);
-            if (userDto.getId() == null) {
-                resp.sendError(404);
+            if (Strings.isNullOrEmpty(id)) {
+                resp.sendError(400);
                 return;
             }
             resp.setContentType("application/json");
             resp.setCharacterEncoding("UTF-8");
-            out.print(JsonStream.serialize(userDto));
+
+            var result = service.getById(id);
+            if (Strings.isNullOrEmpty(result)) {
+                resp.sendError(404);
+                return;
+            }
+
+            out.print(result);
         } catch (IOException e) {
             System.err.println(e.getMessage());
         }
@@ -36,41 +41,30 @@ public class UserManagementServlet extends HttpServlet {
     
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) {
-        makeRequest(req, resp);
+        try (var inputStream = req.getInputStream(); PrintWriter out = resp.getWriter()) {
+            Any any = JsonIterator.deserialize(inputStream.readAllBytes());
+            resp.setContentType("application/json");
+            resp.setCharacterEncoding("UTF-8");
+            out.print(service.create(any));
+        } catch (IOException e) {
+            System.err.println(e.getLocalizedMessage());
+        }
     }
     
     @Override
     protected void doPut(HttpServletRequest req, HttpServletResponse resp) {
-        makeRequest(req, resp);
+        try (var inputStream = req.getInputStream(); PrintWriter out = resp.getWriter()) {
+            Any any = JsonIterator.deserialize(inputStream.readAllBytes());
+            resp.setContentType("application/json");
+            resp.setCharacterEncoding("UTF-8");
+            out.print(service.update(any));
+        } catch (IOException e) {
+            System.err.println(e.getLocalizedMessage());
+        }
     }
     
     @Override
     protected void doDelete(HttpServletRequest req, HttpServletResponse resp) {
-        String id = req.getParameter("id");
-        service.deleteUserById(id);
+        service.deleteById(BudgetUtils.extractPathVariable(req));
     }
-    
-    private void makeRequest(HttpServletRequest req, HttpServletResponse resp) {
-        UserDto userDto = new UserDto();
-        try (var inputStream = req.getInputStream()) {
-            var bytes = inputStream.readAllBytes();
-            Any any = JsonIterator.deserialize(bytes);
-            userDto.setId(any.get("id").toString());
-            userDto.setFirstName(any.get("firstName").toString());
-            userDto.setLastName(any.get("lastName").toString());
-            userDto.setMiddleName(any.get("middleName").toString());
-        } catch (IOException e) {
-            System.err.println(e.getMessage());
-            return;
-        }
-        try (PrintWriter out = resp.getWriter()) {
-            service.createOrUpdate(userDto);
-            resp.setContentType("application/json");
-            resp.setCharacterEncoding("UTF-8");
-            out.print(JsonStream.serialize(userDto));
-        } catch (IOException e) {
-            System.err.println(e.getMessage());
-        }
-    }
-    
 }

@@ -6,7 +6,7 @@ info:
 servers:
   - url: 'https://d5dgrt4l9npeppp5ef61.apigw.yandexcloud.net'
 paths:
-  /user:
+  /user/{id}:
     get:
       x-yc-apigateway-integration:
         type: cloud-functions
@@ -14,13 +14,12 @@ paths:
       operationId: getUserById
       parameters:
         - explode: true
-          in: query
+          in: path
           name: id
           required: true
           schema:
             description: user id
             type: string
-          style: form
       responses:
         '200':
           description: Success response
@@ -29,6 +28,28 @@ paths:
         '404':
           description: User with id not found
       summary: get user by id
+    delete:
+      x-yc-apigateway-integration:
+        type: cloud-functions
+        function_id: d4ef0fpk7mql64fb9g2i
+      operationId: deleteUserById
+      parameters:
+        - explode: true
+          in: path
+          name: id
+          required: true
+          schema:
+            description: user id
+            type: string
+      responses:
+        '200':
+          description: Success response
+        '400':
+          description: Server error
+        '404':
+          description: User with id not found
+      summary: delete user by id
+  /user:
     post:
       x-yc-apigateway-integration:
         type: cloud-functions
@@ -53,28 +74,6 @@ paths:
         '404':
           description: User not found
       summary: update budget
-    delete:
-      x-yc-apigateway-integration:
-        type: cloud-functions
-        function_id: d4ef0fpk7mql64fb9g2i
-      operationId: deleteUserById
-      parameters:
-        - explode: true
-          in: query
-          name: id
-          required: true
-          schema:
-            description: user id
-            type: string
-          style: form
-      responses:
-        '200':
-          description: Success response
-        '400':
-          description: Server error
-        '404':
-          description: User with id not found
-      summary: delete user by id
   /budget/{id}:
     get:
       x-yc-apigateway-integration:
@@ -96,6 +95,28 @@ paths:
         '404':
           description: Budget with id not found
       summary: get budget by id
+    delete:
+      x-yc-apigateway-integration:
+        type: cloud-functions
+        function_id: d4e6a72hp7187il17v2p
+      operationId: deleteBudgetById
+      parameters:
+        - explode: true
+          in: path
+          name: id
+          required: true
+          schema:
+            description: budget id
+            type: string
+          style: form
+      responses:
+        '200':
+          description: Success response
+        '400':
+          description: Server error
+        '404':
+          description: Budget with id not found
+      summary: delete budget by id
   /budget:
     get:
       x-yc-apigateway-integration:
@@ -117,7 +138,7 @@ paths:
           description: Server error
         '404':
           description: Budget with id not found
-      summary: get budget by id
+      summary: get budgets for userid
     post:
       x-yc-apigateway-integration:
         type: cloud-functions
@@ -142,28 +163,6 @@ paths:
         '404':
           description: Budget not found
       summary: update budget
-    delete:
-      x-yc-apigateway-integration:
-        type: cloud-functions
-        function_id: d4e6a72hp7187il17v2p
-      operationId: deleteBudgetById
-      parameters:
-        - explode: true
-          in: path
-          name: id
-          required: true
-          schema:
-            description: user id
-            type: string
-          style: form
-      responses:
-        '200':
-          description: Success response
-        '400':
-          description: Server error
-        '404':
-          description: Budget with id not found
-      summary: delete budget by id
 x-yc-apigateway:
   service_account: aje4ej9qgr488q4tauai
   

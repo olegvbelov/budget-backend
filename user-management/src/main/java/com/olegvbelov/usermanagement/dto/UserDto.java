@@ -1,16 +1,11 @@
 package com.olegvbelov.usermanagement.dto;
 
-import java.time.LocalDateTime;
+import com.olegvbelov.core.dto.BaseDto;
 
-public class UserDto {
-    private String id;
+public class UserDto extends BaseDto {
     private String firstName;
     private String lastName;
     private String middleName;
-    private LocalDateTime createdAt;
-    private boolean isDeleted;
-    private LocalDateTime updatedAt;
-
     public UserDto() {
         this.id = null;
     }
@@ -47,27 +42,12 @@ public class UserDto {
         return middleName;
     }
     
-    public LocalDateTime getCreatedAt() {
-        return createdAt;
-    }
-    
-    public void setCreatedAt(LocalDateTime createdAt) {
-        this.createdAt = createdAt;
-    }
-    
+
     public boolean isDeleted() {
         return isDeleted;
     }
     
     public void setDeleted(boolean deleted) {
         isDeleted = deleted;
-    }
-    
-    public LocalDateTime getUpdatedAt() {
-        return updatedAt;
-    }
-    
-    public void setUpdatedAt(LocalDateTime updatedAt) {
-        this.updatedAt = updatedAt;
     }
 }
