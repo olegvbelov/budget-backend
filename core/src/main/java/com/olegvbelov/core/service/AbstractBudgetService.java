@@ -3,6 +3,7 @@ package com.olegvbelov.core.service;
 import com.jsoniter.any.Any;
 import com.jsoniter.output.JsonStream;
 import com.olegvbelov.core.dto.BaseDto;
+import com.olegvbelov.core.enumeration.QueryType;
 import com.olegvbelov.core.mapper.BaseMapper;
 import com.olegvbelov.core.util.Constants;
 import com.yandex.ydb.table.SessionRetryContext;
@@ -11,28 +12,30 @@ import com.yandex.ydb.table.result.ResultSetReader;
 import com.yandex.ydb.table.transaction.TxControl;
 import com.yandex.ydb.table.values.PrimitiveValue;
 
-import java.nio.charset.Charset;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
+import java.util.EnumMap;
 import java.util.List;
+import java.util.function.Supplier;
 
 public abstract class AbstractBudgetService<Dto extends BaseDto,
         Mapper extends BaseMapper<Dto>> implements CoreBudgetService {
 
     public final SessionRetryContext retryCtx;
     protected abstract Mapper getMapper();
+    protected EnumMap<QueryType, Supplier<String>> queryMap;
 
     public AbstractBudgetService() {
         var dbConnector = new DBConnector();
         this.retryCtx = dbConnector.getContext();
+        queryMap = new EnumMap<>(QueryType.class);
     }
 
     @Override
-    public String getById(String id) {
-
-        var params = Params.of("$id", PrimitiveValue.string(id.getBytes(Charset.defaultCharset())));
-        return runSelectQuery(getQueryForGet(), params);
+    public String getSelectQuery(Params paramsFromRequest, QueryType queryType) {
+        return runSelectQuery(queryMap.get(queryType).get(), prepareParamsForSelect(paramsFromRequest));
     }
+
+
 
     private String runSelectQuery(String query, Params params) {
         var txControl = TxControl.serializableRw().setCommitTx(true);
@@ -59,20 +62,17 @@ public abstract class AbstractBudgetService<Dto extends BaseDto,
             if (!resultSetReader.next()) {
                 return null;
             }
-            return JsonStream.serialize(getMapper().mapToDto(resultSetReader));
+            return JsonStream.serialize(List.of(getMapper().mapToDto(resultSetReader)));
         }
-        List<Dto> result = new ArrayList<>();
-        while (resultSetReader.next()) {
-            result.add(getMapper().mapToDto(resultSetReader));
-        }
-        return JsonStream.serialize(result);
+        return JsonStream.serialize(getMapper().mapList(resultSetReader));
     }
 
-    protected abstract String getQueryForGet();
+    public void deleteById(Params paramsFromRequest) {
+        runSelectQuery(queryMap.get(QueryType.DELETEBYID).get(), prepareParamsForSelect(paramsFromRequest));
+    }
 
-    public void deleteById(String id) {
-        var params = Params.of("$id", PrimitiveValue.string(id.getBytes(Charset.defaultCharset())));
-        runSelectQuery(getQueryForDelete(), params);
+    protected Params prepareParamsForSelect(Params params) {
+        return params;
     }
 
     public String create(Any any) {
@@ -80,17 +80,15 @@ public abstract class AbstractBudgetService<Dto extends BaseDto,
         forParams.put("$createdAt", PrimitiveValue.datetime(LocalDateTime.now()));
         runUpdateQuery(getQueryForCreate(), forParams);
         var id = any.get("id").toString();
-        return getById(id);
+        return getSelectQuery(Params.of(Constants.PARAM_ID, PrimitiveValue.utf8(id)), QueryType.GETBYID);
     }
 
 
     public String update(Any any) {
         runUpdateQuery(getQueryForUpdate(), prepareParamsForUpdate(any));
         var id = any.get("id").toString();
-        return getById(id);
+        return getSelectQuery(Params.of(Constants.PARAM_ID, PrimitiveValue.utf8(id)), QueryType.GETBYID);
     }
-
-    protected abstract String getQueryForDelete();
 
     protected abstract String getQueryForCreate();
 

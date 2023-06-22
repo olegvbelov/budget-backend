@@ -23,32 +23,13 @@
             <artifactId>javax.servlet-api</artifactId>
         </dependency>
         <dependency>
-            <groupId>io.grpc</groupId>
-            <artifactId>grpc-context</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>io.grpc</groupId>
-            <artifactId>grpc-core</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>io.grpc</groupId>
-            <artifactId>grpc-netty-shaded</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>com.yandex.ydb</groupId>
-            <artifactId>ydb-sdk-core</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>com.yandex.ydb</groupId>
-            <artifactId>ydb-sdk-table</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>com.yandex.ydb</groupId>
-            <artifactId>ydb-sdk-auth-iam</artifactId>
-        </dependency>
-        <dependency>
             <groupId>com.jsoniter</groupId>
             <artifactId>jsoniter</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.olegvbelov</groupId>
+            <artifactId>core</artifactId>
+            <version>${revision}${sha1}${changelist}</version>
         </dependency>
     </dependencies>
 

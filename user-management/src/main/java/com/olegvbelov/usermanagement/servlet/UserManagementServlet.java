@@ -1,10 +1,14 @@
 package com.olegvbelov.usermanagement.servlet;
 
-import com.google.common.base.Strings;
 import com.jsoniter.JsonIterator;
 import com.jsoniter.any.Any;
+import com.olegvbelov.core.enumeration.QueryType;
 import com.olegvbelov.core.util.BudgetUtils;
+import com.olegvbelov.core.util.Constants;
+import com.olegvbelov.core.util.ObjectUtils;
 import com.olegvbelov.usermanagement.service.UserService;
+import com.yandex.ydb.table.query.Params;
+import com.yandex.ydb.table.values.PrimitiveValue;
 
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -20,15 +24,16 @@ public class UserManagementServlet extends HttpServlet {
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) {
         var id = BudgetUtils.extractPathVariable(req);
         try (PrintWriter out = resp.getWriter()) {
-            if (Strings.isNullOrEmpty(id)) {
+            if (ObjectUtils.isNullOrBlank(id) || id.length() < 32) {
                 resp.sendError(400);
                 return;
             }
             resp.setContentType("application/json");
             resp.setCharacterEncoding("UTF-8");
 
-            var result = service.getById(id);
-            if (Strings.isNullOrEmpty(result)) {
+            var idParam = Params.of(Constants.PARAM_ID, PrimitiveValue.utf8(id));
+            var result = service.getSelectQuery(idParam, QueryType.GETBYID);
+            if (ObjectUtils.isNullOrBlank(result)) {
                 resp.sendError(404);
                 return;
             }
@@ -65,6 +70,7 @@ public class UserManagementServlet extends HttpServlet {
     
     @Override
     protected void doDelete(HttpServletRequest req, HttpServletResponse resp) {
-        service.deleteById(BudgetUtils.extractPathVariable(req));
+        var idParam = Params.of(Constants.QUERY_EXECUTE, PrimitiveValue.utf8(BudgetUtils.extractPathVariable(req)));
+        service.deleteById(idParam);
     }
 }
