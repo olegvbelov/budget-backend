@@ -1,140 +1,96 @@
 package com.olegvbelov.categorymanagement.dto;
 
-import java.math.BigDecimal;
+import com.olegvbelov.core.dto.BaseDto;
 
-public class CategoryDto {
-    private String id;
+import java.util.Objects;
+
+public class CategoryDto extends BaseDto {
+    private String budgetId;
     private String name;
     private String parentId;
-    private String createPeriod;
-    private String closePeriod;
-    private long sortOrder;
-    private String fundsId;
-    private String period;
-    private BigDecimal allocatedFunds;
-    private BigDecimal usedFunds;
-    private BigDecimal availableFunds;
+    private String created;
+    private String closed;
+    private long sort;
+    private Boolean hidden;
     
     public CategoryDto() {
+        this.closed = "";
+        this.hidden = false;
     }
-    
+
     public String getId() {
         return id;
     }
-    
+
     public void setId(String id) {
         this.id = id;
     }
-    
+
+    public String getBudgetId() {
+        return budgetId;
+    }
+
+    public void setBudgetId(String budgetId) {
+        this.budgetId = budgetId;
+    }
+
     public String getName() {
         return name;
     }
-    
+
     public void setName(String name) {
         this.name = name;
     }
-    
+
     public String getParentId() {
         return parentId;
     }
-    
+
     public void setParentId(String parentId) {
         this.parentId = parentId;
     }
-    
-    public String getCreatePeriod() {
-        return createPeriod;
+
+    public String getCreated() {
+        return created;
     }
-    
-    public void setCreatePeriod(String createPeriod) {
-        this.createPeriod = createPeriod;
+
+    public void setCreated(String created) {
+        this.created = created;
     }
-    
-    public String getClosePeriod() {
-        return closePeriod;
+
+    public String getClosed() {
+        return closed;
     }
-    
-    public void setClosePeriod(String closePeriod) {
-        this.closePeriod = closePeriod;
+
+    public void setClosed(String closed) {
+        this.closed = closed;
     }
-    
-    public long getSortOrder() {
-        return sortOrder;
+
+    public long getSort() {
+        return sort;
     }
-    
-    public void setSortOrder(long sortOrder) {
-        this.sortOrder = sortOrder;
+
+    public void setSort(long sort) {
+        this.sort = sort;
     }
-    
-    public String getFundsId() {
-        return fundsId;
+
+    public Boolean getHidden() {
+        return hidden;
     }
-    
-    public void setFundsId(String fundsId) {
-        this.fundsId = fundsId;
+
+    public void setHidden(Boolean hidden) {
+        this.hidden = hidden;
     }
-    
-    public String getPeriod() {
-        return period;
-    }
-    
-    public void setPeriod(String period) {
-        this.period = period;
-    }
-    
-    public BigDecimal getAllocatedFunds() {
-        return allocatedFunds;
-    }
-    
-    public void setAllocatedFunds(BigDecimal allocatedFunds) {
-        this.allocatedFunds = allocatedFunds;
-    }
-    
-    public BigDecimal getUsedFunds() {
-        return usedFunds;
-    }
-    
-    public void setUsedFunds(BigDecimal usedFunds) {
-        this.usedFunds = usedFunds;
-    }
-    
-    public BigDecimal getAvailableFunds() {
-        return availableFunds;
-    }
-    
-    public void setAvailableFunds(BigDecimal availableFunds) {
-        this.availableFunds = availableFunds;
-    }
-    
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (!(o instanceof CategoryDto)) return false;
-        
-        CategoryDto that = (CategoryDto) o;
-    
-        return id.equals(that.id);
+        if (!(o instanceof CategoryDto that)) return false;
+        return Objects.equals(getId(), that.getId());
     }
-    
+
     @Override
     public int hashCode() {
-        return id.hashCode();
-    }
-    
-    @Override
-    public String toString() {
-        return "CategoryDto{" +
-                "id='" + id + '\'' +
-                ", name='" + name + '\'' +
-                ", parentId='" + parentId + '\'' +
-                ", createPeriod='" + createPeriod + '\'' +
-                ", closePeriod='" + closePeriod + '\'' +
-                ", sortOrder=" + sortOrder +
-                ", balanceId='" + fundsId + '\'' +
-                ", period='" + period + '\'' +
-                ", allocatedFunds=" + allocatedFunds +
-                ", usedFunds=" + usedFunds +
-                ", availableFunds=" + availableFunds +
-                '}';
+        return Objects.hash(getId());
     }
 }

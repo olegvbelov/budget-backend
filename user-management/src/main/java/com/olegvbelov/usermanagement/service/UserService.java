@@ -1,14 +1,15 @@
 package com.olegvbelov.usermanagement.service;
 
 import com.jsoniter.any.Any;
+import com.olegvbelov.core.enumeration.QueryType;
 import com.olegvbelov.core.service.AbstractBudgetService;
-import com.olegvbelov.usermanagement.mapper.UserMapper;
 import com.olegvbelov.usermanagement.dto.UserDto;
+import com.olegvbelov.usermanagement.mapper.UserMapper;
 import com.yandex.ydb.table.query.Params;
 import com.yandex.ydb.table.values.PrimitiveValue;
 
-import java.nio.charset.Charset;
 import java.time.LocalDateTime;
+import java.util.function.Supplier;
 
 public class UserService extends AbstractBudgetService<UserDto, UserMapper> {
     private final UserMapper mapper = new UserMapper();
@@ -20,41 +21,27 @@ public class UserService extends AbstractBudgetService<UserDto, UserMapper> {
 
     public UserService() {
         super();
-    }
-
-//    @Override
-//    protected String parse(ResultSetReader resultSetReader) {
-//
-//        if (!resultSetReader.next()) {
-//            return null;
-//        }
-//        return JsonStream.serialize(mapper.mapToDto(resultSetReader));
-//    }
-
-    @Override
-    protected String getQueryForGet() {
-        return "DECLARE $id AS String;" +
+        Supplier<String> getById = () -> "DECLARE $id AS Utf8;" +
                 "SELECT u.id AS id, u.first_name AS firstName, u.last_name AS lastName, " +
                 "u.middle_name AS middleName, u.is_deleted AS isDeleted, u.created_at AS createdAt, " +
                 "u.updated_at AS updatedAt\n" +
                 "FROM user AS u\n" +
                 "WHERE u.id = $id and u.is_deleted = false;";
-    }
-
-    @Override
-    protected String getQueryForDelete() {
-        return "DECLARE $id AS String;" +
+        Supplier<String> deleteById = () -> "DECLARE $id AS String;" +
                 "UPDATE user\n" +
                 "SET is_deleted = true\n" +
                 "WHERE id = $id and is_deleted = false;";
+        super.queryMap.put(QueryType.GETBYID, getById);
+        super.queryMap.put(QueryType.DELETEBYID, deleteById);
     }
+
 
     @Override
     protected String getQueryForCreate() {
-        return "DECLARE $id AS String;" +
-                "DECLARE $firstName AS String;" +
-                "DECLARE $lastName AS String;" +
-                "DECLARE $middleName AS String;" +
+        return "DECLARE $id AS Utf8;" +
+                "DECLARE $firstName AS Utf8;" +
+                "DECLARE $lastName AS Utf8;" +
+                "DECLARE $middleName AS Utf8;" +
                 "DECLARE $createdAt AS DateTime;" +
                 "DECLARE $updatedAt AS DateTime;" +
                 "DECLARE $isDeleted AS Bool;" +
@@ -64,10 +51,10 @@ public class UserService extends AbstractBudgetService<UserDto, UserMapper> {
 
     @Override
     protected String getQueryForUpdate() {
-        return "DECLARE $id AS String;" +
-                "DECLARE $firstName AS String;" +
-                "DECLARE $lastName AS String;" +
-                "DECLARE $middleName AS String;" +
+        return "DECLARE $id AS Utf8;" +
+                "DECLARE $firstName AS Utf8;" +
+                "DECLARE $lastName AS Utf8;" +
+                "DECLARE $middleName AS Utf8;" +
                 "DECLARE $updatedAt AS DateTime;" +
                 "DECLARE $isDeleted AS Bool;" +
                 "UPSERT INTO user (id, first_name, last_name, middle_name, updated_at, is_deleted) " +
@@ -77,16 +64,12 @@ public class UserService extends AbstractBudgetService<UserDto, UserMapper> {
     @Override
     protected Params prepareParamsForUpdate(Any any) {
         var params = Params.create();
-                params.put("$id", PrimitiveValue.string(any.get("id").toString()
-                                .getBytes(Charset.defaultCharset())))
-                .put("$firstName", PrimitiveValue.string(any.get("firstName").toString()
-                        .getBytes(Charset.defaultCharset())))
-                .put("$lastName", PrimitiveValue.string(any.get("lastName").toString()
-                        .getBytes(Charset.defaultCharset())))
-                .put("$middleName", PrimitiveValue.string(any.get("middleName").toString()
-                        .getBytes(Charset.defaultCharset())))
+                params.put("$id", PrimitiveValue.utf8(any.get("id").toString()))
+                .put("$firstName", PrimitiveValue.utf8(any.get("firstName").toString()))
+                .put("$lastName", PrimitiveValue.utf8(any.get("lastName").toString()))
+                .put("$middleName", PrimitiveValue.utf8(any.get("middleName").toString()))
                 .put("$updatedAt", PrimitiveValue.datetime(LocalDateTime.now()))
                 .put("$isDeleted", PrimitiveValue.bool(any.get("isDeleted").toBoolean()));
-        return null;
+        return params;
     }
 }

@@ -6,6 +6,190 @@ info:
 servers:
   - url: 'https://d5dgrt4l9npeppp5ef61.apigw.yandexcloud.net'
 paths:
+  /fund/{id}:
+    get:
+      x-yc-apigateway-integration:
+        type: cloud-functions
+        function_id: d4e1m8tk3i9rf6jhebhn
+      operationId: getFundById
+      parameters:
+        - explode: true
+          in: path
+          name: id
+          required: true
+          schema:
+            description: fund id
+            type: string
+      responses:
+        '200':
+          description: Success response
+        '400':
+          description: Server error
+        '404':
+          description: Fund with id not found
+      summary: get fund by id
+    delete:
+      x-yc-apigateway-integration:
+        type: cloud-functions
+        function_id: d4e1m8tk3i9rf6jhebhn
+      operationId: deleteFundById
+      parameters:
+        - explode: true
+          in: path
+          name: id
+          required: true
+          schema:
+            description: fund id
+            type: string
+      responses:
+        '200':
+          description: Success response
+        '400':
+          description: Server error
+        '404':
+          description: Fund with id not found
+      summary: delete fund by id
+  /fund:
+    get:
+      x-yc-apigateway-integration:
+        type: cloud-functions
+        function_id: d4e1m8tk3i9rf6jhebhn
+      operationId: getFundsByCategoryIdAndMonth
+      parameters:
+        - in: query
+          name: categoryId
+          required: false
+          schema:
+            description: category id
+            type: string
+          style: form
+        - in: query
+          name: month
+          schema:
+            description: month
+            type: string
+          style: form
+      responses:
+        '200':
+          description: Success response
+        '400':
+          description: Server error
+        '404':
+          description: Funds for category id and month not found
+      summary: get finds for categoryId and month
+    post:
+      x-yc-apigateway-integration:
+        type: cloud-functions
+        function_id: d4e1m8tk3i9rf6jhebhn
+      operationId: createFund
+      responses:
+        '200':
+          description: Success response
+        '400':
+          description: Server error
+      summary: create new fund
+    put:
+      x-yc-apigateway-integration:
+        type: cloud-functions
+        function_id: d4e1m8tk3i9rf6jhebhn
+      operationId: updateFund
+      responses:
+        '200':
+          description: Success response
+        '400':
+          description: Server error
+        '404':
+          description: Fund not found
+      summary: update fund
+  /category/{id}:
+    get:
+      x-yc-apigateway-integration:
+        type: cloud-functions
+        function_id: d4e1m8tk3i9rf6jhebhn
+      operationId: getCategoryById
+      parameters:
+        - explode: true
+          in: path
+          name: id
+          required: true
+          schema:
+            description: category id
+            type: string
+      responses:
+        '200':
+          description: Success response
+        '400':
+          description: Server error
+        '404':
+          description: Category with id not found
+      summary: get category by id
+    delete:
+      x-yc-apigateway-integration:
+        type: cloud-functions
+        function_id: d4e1m8tk3i9rf6jhebhn
+      operationId: deleteCategoryById
+      parameters:
+        - explode: true
+          in: path
+          name: id
+          required: true
+          schema:
+            description: category id
+            type: string
+      responses:
+        '200':
+          description: Success response
+        '400':
+          description: Server error
+        '404':
+          description: Category with id not found
+      summary: delete category by id
+  /category:
+    get:
+      x-yc-apigateway-integration:
+        type: cloud-functions
+        function_id: d4e1m8tk3i9rf6jhebhn
+      operationId: getCategoryByBudgetById
+      parameters:
+        - in: query
+          name: budgetId
+          required: false
+          schema:
+            description: budget id
+            type: string
+          style: form
+      responses:
+        '200':
+          description: Success response
+        '400':
+          description: Server error
+        '404':
+          description: Category for budget id not found
+      summary: get category for budgetId
+    post:
+      x-yc-apigateway-integration:
+        type: cloud-functions
+        function_id: d4e1m8tk3i9rf6jhebhn
+      operationId: createCategory
+      responses:
+        '200':
+          description: Success response
+        '400':
+          description: Server error
+      summary: create new category
+    put:
+      x-yc-apigateway-integration:
+        type: cloud-functions
+        function_id: d4e1m8tk3i9rf6jhebhn
+      operationId: updateCategory
+      responses:
+        '200':
+          description: Success response
+        '400':
+          description: Server error
+        '404':
+          description: Category not found
+      summary: update category
   /user/{id}:
     get:
       x-yc-apigateway-integration:
@@ -73,7 +257,7 @@ paths:
           description: Server error
         '404':
           description: User not found
-      summary: update budget
+      summary: update user
   /budget/{id}:
     get:
       x-yc-apigateway-integration:

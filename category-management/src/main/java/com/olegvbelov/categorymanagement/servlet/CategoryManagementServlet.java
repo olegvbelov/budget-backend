@@ -1,9 +1,8 @@
-package com.olegvbelov.budgetmanagement.servlet;
+package com.olegvbelov.categorymanagement.servlet;
 
-import com.google.common.base.Strings;
 import com.jsoniter.JsonIterator;
 import com.jsoniter.any.Any;
-import com.olegvbelov.budgetmanagement.service.BudgetService;
+import com.olegvbelov.categorymanagement.service.CategoryService;
 import com.olegvbelov.core.enumeration.QueryType;
 import com.olegvbelov.core.util.BudgetUtils;
 import com.olegvbelov.core.util.Constants;
@@ -16,48 +15,47 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 
-public class BudgetManagementServlet extends HttpServlet {
-    private final BudgetService service = new BudgetService();
-
+public class CategoryManagementServlet extends HttpServlet {
+    
+    private final CategoryService service = new CategoryService();
+    
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) {
         var id = BudgetUtils.extractPathVariable(req);
         if (id.length() < 32) {
             id = null;
         }
-        var userId = req.getParameter("userId");
-        try (var out = resp.getWriter()) {
-            if (ObjectUtils.isNullOrBlank(id) && ObjectUtils.isNullOrBlank(userId)) {
+        var budgetId = req.getParameter("budgetId");
+        try (PrintWriter out = resp.getWriter()) {
+            if (ObjectUtils.isNullOrBlank(id) && ObjectUtils.isNullOrBlank(budgetId)) {
                 resp.sendError(400);
                 return;
             }
             resp.setContentType("application/json");
             resp.setCharacterEncoding("UTF-8");
-            String result;
+            Params params = Params.create();
+            QueryType queryType = QueryType.GETBYID;
             if (ObjectUtils.isNullOrBlank(id)) {
-                result = service.getSelectQuery(Params.of("$userId",
-                        PrimitiveValue.utf8(userId)), QueryType.SELECTBYPARAMS);
+                params.put("$budgetId", PrimitiveValue.utf8(budgetId));
+                queryType = QueryType.SELECTBYPARAMS;
             } else {
-                result = service.getSelectQuery(Params.of("$id",
-                        PrimitiveValue.utf8(id)), QueryType.GETBYID);
+                params.put(Constants.PARAM_ID, PrimitiveValue.utf8(
+                        new String(id.getBytes(Charset.defaultCharset()), StandardCharsets.UTF_8)));
             }
-            if (Strings.isNullOrEmpty(result)) {
+            var result = service.getSelectQuery(params, queryType);
+            if (ObjectUtils.isNullOrBlank(result)) {
                 resp.sendError(404);
                 return;
             }
+
             out.print(result);
         } catch (IOException e) {
-            System.err.println(e.getLocalizedMessage());
+            System.err.println(e.getMessage());
         }
     }
-
-    @Override
-    protected void doDelete(HttpServletRequest req, HttpServletResponse resp) {
-        var id = BudgetUtils.extractPathVariable(req);
-        service.deleteById(Params.of(Constants.PARAM_ID, PrimitiveValue.utf8(id)));
-    }
-
 
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) {
@@ -81,5 +79,11 @@ public class BudgetManagementServlet extends HttpServlet {
         } catch (IOException e) {
             System.err.println(e.getLocalizedMessage());
         }
+    }
+
+    @Override
+    protected void doDelete(HttpServletRequest req, HttpServletResponse resp) {
+        var idParam = Params.of("$id", PrimitiveValue.utf8(BudgetUtils.extractPathVariable(req)));
+        service.deleteById(idParam);
     }
 }
