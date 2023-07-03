@@ -7,6 +7,7 @@ import com.yandex.ydb.table.query.Params;
 public interface CoreBudgetService {
     String getSelectQuery(Params paramsFromRequest, QueryType queryType);
     String create(Any any);
+    void bulkCreate(Any any);
     String update(Any any);
     void deleteById(Params paramsFromRequest);
 }

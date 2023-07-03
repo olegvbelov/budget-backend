@@ -39,4 +39,8 @@ public class DBConnector {
         return TableClient.newClient(GrpcTableRpc.ownTransport(transport))
                 .build();
     }
+
+    public String getDatabase() {
+        return database;
+    }
 }

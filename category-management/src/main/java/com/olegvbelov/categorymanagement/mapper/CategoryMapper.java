@@ -17,7 +17,7 @@ public class CategoryMapper implements BaseMapper<CategoryDto> {
         result.setParentId(resultSetReader.getColumn("parentId").getUtf8());
         result.setClosed(resultSetReader.getColumn("closed").getUtf8());
         result.setCreated(resultSetReader.getColumn("created").getUtf8());
-        result.setSort(resultSetReader.getColumn("sort").getInt64());
+        result.setSort(resultSetReader.getColumn("sort").getUint32());
         result.setHidden(resultSetReader.getColumn("hidden").getBool());
         return result;
     }
