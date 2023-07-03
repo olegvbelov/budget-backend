@@ -6,13 +6,17 @@ import com.olegvbelov.categorymanagement.mapper.CategoryMapper;
 import com.olegvbelov.core.enumeration.QueryType;
 import com.olegvbelov.core.service.AbstractBudgetService;
 import com.yandex.ydb.table.query.Params;
-import com.yandex.ydb.table.values.PrimitiveValue;
+import com.yandex.ydb.table.values.*;
 
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
+import java.util.List;
+import java.util.Map;
 import java.util.function.Supplier;
+import java.util.stream.Collectors;
 
 public class CategoryService extends AbstractBudgetService<CategoryDto, CategoryMapper> {
+    public static final String TABLE_NAME = "/category";
     private final CategoryMapper mapper = new CategoryMapper();
 
     public CategoryService() {
@@ -35,6 +39,8 @@ public class CategoryService extends AbstractBudgetService<CategoryDto, Category
         super.queryMap.put(QueryType.GETBYID, getById);
         super.queryMap.put(QueryType.DELETEBYID, deleteById);
         super.queryMap.put(QueryType.SELECTBYPARAMS, getByBudgetId);
+        tableName = TABLE_NAME;
+        mapForBulkCreate = buildTypesMap();
     }
 
     @Override
@@ -98,5 +104,38 @@ public class CategoryService extends AbstractBudgetService<CategoryDto, Category
                 .put("$hidden", PrimitiveValue.bool(any.get("hidden").toBoolean()))
                 .put("$updatedAt", PrimitiveValue.datetime(LocalDateTime.now()));
         return params;
+    }
+
+    private Map<String, Type> buildTypesMap() {
+        return Map.of("id", PrimitiveType.utf8(),
+                "budget_id", PrimitiveType.utf8(),
+                "parent_id", PrimitiveType.utf8(),
+                "sort", PrimitiveType.uint32(),
+                "name", PrimitiveType.utf8(),
+                "created", PrimitiveType.utf8(),
+                "closed", PrimitiveType.utf8(),
+                "hidden", PrimitiveType.bool(),
+                "created_at", PrimitiveType.datetime(),
+                "updated_at", PrimitiveType.datetime()
+                );
+    }
+
+    @Override
+    protected ListValue prepareBulkData(List<Any> anyList, Supplier<StructType> structTypeSupplier) {
+        var structType = structTypeSupplier.get();
+        return ListType.of(structType).newValue(
+                anyList.stream().map(any -> structType.newValue(Map.of(
+                        "id", PrimitiveValue.utf8(any.get("id").toString()),
+                        "budget_id", PrimitiveValue.utf8(any.get("budgetId").toString()),
+                        "parent_id", PrimitiveValue.utf8(any.get("parentId").toString()),
+                        "sort", PrimitiveValue.uint32(any.get("sort").toBigInteger().intValue()),
+                        "name", PrimitiveValue.utf8(any.get("name").toString()),
+                        "created", PrimitiveValue.utf8(any.get("created").toString()),
+                        "closed", PrimitiveValue.utf8(any.get("closed").toString()),
+                        "hidden", PrimitiveValue.bool(any.get("hidden").toBoolean()),
+                        "created_at", PrimitiveValue.datetime(LocalDateTime.now()),
+                        "updated_at", PrimitiveValue.datetime(LocalDateTime.now())
+                ))).collect(Collectors.toList())
+        );
     }
 }

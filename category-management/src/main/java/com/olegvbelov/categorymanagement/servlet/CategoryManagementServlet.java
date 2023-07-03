@@ -1,6 +1,7 @@
 package com.olegvbelov.categorymanagement.servlet;
 
 import com.jsoniter.JsonIterator;
+import com.jsoniter.ValueType;
 import com.jsoniter.any.Any;
 import com.olegvbelov.categorymanagement.service.CategoryService;
 import com.olegvbelov.core.enumeration.QueryType;
@@ -63,7 +64,12 @@ public class CategoryManagementServlet extends HttpServlet {
             Any any = JsonIterator.deserialize(inputStream.readAllBytes());
             resp.setContentType("application/json");
             resp.setCharacterEncoding("UTF-8");
-            out.print(service.create(any));
+            if (ValueType.OBJECT.equals(any.valueType())) {
+                out.print(service.create(any));
+            }
+            if (ValueType.ARRAY.equals(any.valueType())) {
+                service.bulkCreate(any);
+            }
         } catch (IOException e) {
             System.err.println(e.getLocalizedMessage());
         }
